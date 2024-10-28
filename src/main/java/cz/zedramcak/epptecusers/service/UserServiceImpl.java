@@ -40,8 +40,16 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void removeUser(Integer userId) {
-        userRepository.removeUser(userId);
+    public void removeUser(String userId) {
+        userRepository.removeUser(getParsedUserId(userId));
+    }
+
+    private static int getParsedUserId(String userId) {
+        try {
+            return Integer.parseInt(userId);
+        } catch (NumberFormatException exception) {
+            throw new IllegalArgumentException("The userId is invalid.");
+        }
     }
 
     @Override
@@ -52,24 +60,25 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<UserDTO> getUsersByParameters(User user) {
+        setBirthNumberFormat(user);
         Map<Integer, User> users = userRepository.getUsersWithParameters(user);
         return getUserDTOS(users);
     }
 
     private List<UserDTO> getUserDTOS(Map<Integer, User> users) {
-        List<UserDTO> filtredUsers = new ArrayList<>();
-        users.forEach((id, user1) -> {
-            UserDTO userDTO = new UserDTO();
-            userDTO.setId(id);
-            userDTO.setFirstName(user1.getFirstName());
-            userDTO.setLastName(user1.getLastName());
-            userDTO.setBirthNumber(user1.getBirthNumber());
-            userDTO.setAge(getAgeFromBirthNumber(user1.getBirthNumber()));
+        List<UserDTO> filteredUsers = new ArrayList<>();
 
-            filtredUsers.add(userDTO);
+        users.forEach((userId, user) -> {
+            UserDTO userDTO = createUserDTO(userId, user);
+            filteredUsers.add(userDTO);
         });
 
-        return filtredUsers;
+        return filteredUsers;
+    }
+
+    private UserDTO createUserDTO(Integer userId, User user) {
+        int age = getAgeFromBirthNumber(user.getBirthNumber());
+        return new UserDTO(userId, user.getBirthNumber(), user.getFirstName(), user.getLastName(), age);
     }
 
     private Integer getAgeFromBirthNumber(String birthNumber) {

@@ -49,12 +49,12 @@ public class UserController {
     @DeleteMapping("/{id}")
     public ResponseEntity<String> removeUser(@PathVariable String id){
         try {
-            userService.removeUser(Integer.parseInt(id));
+            userService.removeUser(id);
             return ResponseEntity.ok("User removed");
         }catch (UserDoesNotExistsException exception){
             return ResponseEntity.status(404).body(exception.getMessage());
         }catch (NumberFormatException exception){
-            return ResponseEntity.badRequest().body("Id must be a number");
+            return ResponseEntity.badRequest().body(exception.getMessage());
         }
     }
 

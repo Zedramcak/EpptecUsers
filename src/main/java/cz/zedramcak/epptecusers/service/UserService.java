@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface UserService {
     void addUser(User user);
-    void removeUser(Integer userId);
+    void removeUser(String userId);
     List<UserDTO> getAllUsers();
     List<UserDTO> getUsersByParameters(User user);
 }
