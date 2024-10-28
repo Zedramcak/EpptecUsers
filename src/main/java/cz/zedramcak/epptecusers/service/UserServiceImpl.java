@@ -38,6 +38,11 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public void removeUser(Integer userId) {
+        userRepository.removeUser(userId);
+    }
+
+    @Override
     public Map<Integer, User> getAllUsers() {
         return userRepository.getAllUsers();
     }

@@ -2,6 +2,7 @@ package cz.zedramcak.epptecusers.repository;
 
 import cz.zedramcak.epptecusers.entity.User;
 import cz.zedramcak.epptecusers.exceptions.UserExistsException;
+import cz.zedramcak.epptecusers.exceptions.UserDoesNotExistsException;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,5 +52,23 @@ public class UserRepositoryTest {
 
         userRepository.addUser(userMock1);
         assertThrows(UserExistsException.class, () -> userRepository.addUser(userMock2));
+    }
+
+    @Test
+    void whenRemoveUser_thenShouldBeRemoved() {
+        User userMock1 = new User();
+        userMock1.setFirstName("John");
+        userMock1.setLastName("Doe");
+        userMock1.setBirthNumber("830701/1234");
+
+        userRepository.addUser(userMock1);
+        userRepository.removeUser(0);
+        Map<Integer, User> users = userRepository.getAllUsers();
+        assertFalse(users.containsValue(userMock1));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUserNotExists() {
+        assertThrows(UserDoesNotExistsException.class, () -> userRepository.removeUser(0));
     }
 }

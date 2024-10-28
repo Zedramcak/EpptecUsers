@@ -1,6 +1,7 @@
 package cz.zedramcak.epptecusers.repository;
 
 import cz.zedramcak.epptecusers.entity.User;
+import cz.zedramcak.epptecusers.exceptions.UserDoesNotExistsException;
 import cz.zedramcak.epptecusers.exceptions.UserExistsException;
 import org.springframework.stereotype.Repository;
 
@@ -19,6 +20,13 @@ public class UserRepository {
             }
         });
         UserDatabase.put(userIdCounter++, user);
+    }
+
+    public void removeUser(Integer userId){
+        if (!UserDatabase.containsKey(userId)){
+            throw new UserDoesNotExistsException("User with id " + userId + " does not exists");
+        }
+        UserDatabase.remove(userId);
     }
 
     public Map<Integer, User> getAllUsers(){
