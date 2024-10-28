@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -31,12 +32,16 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
-    @GetMapping("/")
-    public ResponseEntity<List<UserDTO>> getFilteredUsers(@RequestBody User user){
-        return ResponseEntity.ok(userService.getUsersByParameters(user));
+    @GetMapping()
+    public ResponseEntity<List<UserDTO>> findUsers(
+            @RequestParam(required = false) String firstName,
+            @RequestParam(required = false) String lastName,
+            @RequestParam(required = false) String birthNumber
+    ){
+        return ResponseEntity.ok(userService.findUsers(firstName, lastName, birthNumber));
     }
 
-    @PostMapping("/")
+    @PostMapping()
     public ResponseEntity<String> addUser(@RequestBody User user){
         try {
             userService.addUser(user);

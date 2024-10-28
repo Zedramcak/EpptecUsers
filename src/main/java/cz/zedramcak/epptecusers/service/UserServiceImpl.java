@@ -4,6 +4,8 @@ import cz.zedramcak.epptecusers.entity.User;
 import cz.zedramcak.epptecusers.entity.dto.UserDTO;
 import cz.zedramcak.epptecusers.exceptions.IncorrectBirthNumberFormatException;
 import cz.zedramcak.epptecusers.exceptions.MissingDataException;
+import cz.zedramcak.epptecusers.exceptions.UserDoesNotExistsException;
+import cz.zedramcak.epptecusers.exceptions.UserExistsException;
 import cz.zedramcak.epptecusers.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -26,22 +29,50 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public void addUser(User user) {
-        if (user.getFirstName().isBlank() || user.getLastName().isBlank() || user.getBirthNumber().isBlank()){
-            throw new MissingDataException("First name and last name are required");
-        }
-
-        if (!isBirthNumberValid(user.getBirthNumber())){
-            throw new IncorrectBirthNumberFormatException("The Birth Number is invalid.");
-        }
+        validateUserFields(user);
 
         setBirthNumberFormat(user);
+
+        checkIfUserWithBirtNumberExists(user.getBirthNumber());
 
         userRepository.addUser(user);
     }
 
+    private void validateUserFields(User user) {
+        checkIfAllFieldsAreFilled(user);
+
+        validateBirthNumber(user.getBirthNumber());
+    }
+
+    private static void checkIfAllFieldsAreFilled(User user) {
+        if (user.getFirstName().isBlank() || user.getLastName().isBlank() || user.getBirthNumber().isBlank()){
+            throw new MissingDataException("First name and last name are required");
+        }
+    }
+
+    private void validateBirthNumber(String birthNumber) {
+        if (!isBirthNumberValid(birthNumber)){
+            throw new IncorrectBirthNumberFormatException("The Birth Number is invalid.");
+        }
+    }
+
+    private void checkIfUserWithBirtNumberExists(String birthNumber) {
+        if (userRepository.existsUserByBirthNumber(birthNumber))
+            throw new UserExistsException("User with this Birth Number already exists.");
+    }
+
     @Override
     public void removeUser(String userId) {
-        userRepository.removeUser(getParsedUserId(userId));
+        Integer id = getParsedUserId(userId);
+
+        checkIfUserWithIdExistsInDatabase(id);
+
+        userRepository.removeUser(id);
+    }
+
+    private void checkIfUserWithIdExistsInDatabase(Integer id) {
+        if (!userRepository.existsUserById(id))
+            throw new UserDoesNotExistsException("User with id " + id + " does not exists");
     }
 
     private static int getParsedUserId(String userId) {
@@ -59,10 +90,17 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<UserDTO> getUsersByParameters(User user) {
-        setBirthNumberFormat(user);
-        Map<Integer, User> users = userRepository.getUsersWithParameters(user);
-        return getUserDTOS(users);
+    public List<UserDTO> findUsers(String firstName, String lastName, String birthNumber) {
+        Map<Integer, User> foundUsers = userRepository.getAllUsers()
+                .entrySet()
+                .stream()
+                .filter(user -> firstName == null || user.getValue().getFirstName().equals(firstName))
+                .filter(user -> lastName == null || user.getValue().getLastName().equals(lastName))
+                .filter(user -> birthNumber == null || user.getValue().getBirthNumber().equals(birthNumber))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+        return getUserDTOS(foundUsers);
+
     }
 
     private List<UserDTO> getUserDTOS(Map<Integer, User> users) {

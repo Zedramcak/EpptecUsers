@@ -9,5 +9,5 @@ public interface UserService {
     void addUser(User user);
     void removeUser(String userId);
     List<UserDTO> getAllUsers();
-    List<UserDTO> getUsersByParameters(User user);
+    List<UserDTO> findUsers(String firstName, String lastName, String birthNumber);
 }
