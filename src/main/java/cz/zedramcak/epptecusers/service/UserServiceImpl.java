@@ -3,7 +3,6 @@ package cz.zedramcak.epptecusers.service;
 import cz.zedramcak.epptecusers.entity.User;
 import cz.zedramcak.epptecusers.exceptions.IncorrectBirthNumberFormatException;
 import cz.zedramcak.epptecusers.exceptions.MissingDataException;
-import cz.zedramcak.epptecusers.exceptions.UserExistsException;
 import cz.zedramcak.epptecusers.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
