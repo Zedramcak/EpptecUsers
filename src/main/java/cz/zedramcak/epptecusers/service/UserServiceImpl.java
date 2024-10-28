@@ -1,12 +1,16 @@
 package cz.zedramcak.epptecusers.service;
 
 import cz.zedramcak.epptecusers.entity.User;
+import cz.zedramcak.epptecusers.entity.dto.UserDTO;
 import cz.zedramcak.epptecusers.exceptions.IncorrectBirthNumberFormatException;
 import cz.zedramcak.epptecusers.exceptions.MissingDataException;
 import cz.zedramcak.epptecusers.repository.UserRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,8 +37,6 @@ public class UserServiceImpl implements UserService{
         setBirthNumberFormat(user);
 
         userRepository.addUser(user);
-
-        log.info("User added -> {}", user);
     }
 
     @Override
@@ -43,12 +45,57 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public Map<Integer, User> getAllUsers() {
-        return userRepository.getAllUsers();
+    public List<UserDTO> getAllUsers() {
+        Map<Integer, User> users = userRepository.getAllUsers();
+        List<UserDTO> allUsers = new ArrayList<>();
+        users.forEach((id, user) -> {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(id);
+            userDTO.setFirstName(user.getFirstName());
+            userDTO.setLastName(user.getLastName());
+            userDTO.setBirthNumber(user.getBirthNumber());
+            userDTO.setAge(getAgeFromBirthNumber(user.getBirthNumber()));
+
+            log.info("Created UserDTO for user {}", userDTO);
+
+            allUsers.add(userDTO);
+        });
+
+        return allUsers;
+    }
+
+    private Integer getAgeFromBirthNumber(String birthNumber) {
+        
+        int year = Integer.parseInt(birthNumber.substring(0, 2));
+        int month = Integer.parseInt(birthNumber.substring(2, 4));
+        int day = Integer.parseInt(birthNumber.substring(4, 6));
+
+        if (month > 50) {
+            month = month - 50;
+        }
+
+        int thisYear = LocalDate.now().getYear() % 100;
+        int century = (year > thisYear) ? 1900 : 2000;
+        int fullYear = century + year;
+
+        LocalDate dateOfBirth = LocalDate.of(fullYear, month, day);
+        LocalDate today = LocalDate.now();
+
+        int age =  today.getYear() - dateOfBirth.getYear();
+
+        if (today.isBefore(dateOfBirth.plusYears(age))) {
+            age--;
+        }
+
+        return age;
     }
 
     private void setBirthNumberFormat(User user) {
-        user.setBirthNumber(user.getBirthNumber().replaceAll("/", ""));
+        String birthNumber = user.getBirthNumber();
+
+        if (birthNumber.matches("\\d{10}")) {
+            user.setBirthNumber(birthNumber.substring(0, 6) + "/" + birthNumber.substring(6));
+        }
     }
 
     private Boolean isBirthNumberValid(String birthNumber) {

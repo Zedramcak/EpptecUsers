@@ -1,6 +1,7 @@
 package cz.zedramcak.epptecusers.controller;
 
 import cz.zedramcak.epptecusers.entity.User;
+import cz.zedramcak.epptecusers.entity.dto.UserDTO;
 import cz.zedramcak.epptecusers.exceptions.IncorrectBirthNumberFormatException;
 import cz.zedramcak.epptecusers.exceptions.MissingDataException;
 import cz.zedramcak.epptecusers.exceptions.UserDoesNotExistsException;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Map<Integer, User>> getAllUsers(){
+    public ResponseEntity<List<UserDTO>> getAllUsers(){
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
