@@ -7,6 +7,7 @@ import cz.zedramcak.epptecusers.exceptions.MissingDataException;
 import cz.zedramcak.epptecusers.exceptions.UserDoesNotExistsException;
 import cz.zedramcak.epptecusers.exceptions.UserExistsException;
 import cz.zedramcak.epptecusers.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +22,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
-    UserService userService;
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+
+    private final UserService userService;
+
+    public static final String USER_ADDED = "User added";
+    public static final String USER_REMOVED = "User removed";
 
     @GetMapping("/list")
     public ResponseEntity<List<UserDTO>> getAllUsers(){
@@ -45,9 +48,9 @@ public class UserController {
     public ResponseEntity<String> addUser(@RequestBody User user){
         try {
             userService.addUser(user);
-            return ResponseEntity.ok("User added");
+            return ResponseEntity.ok(USER_ADDED);
         }catch (UserExistsException | MissingDataException |IncorrectBirthNumberFormatException exception){
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            return handleException(exception);
         }
     }
 
@@ -55,12 +58,17 @@ public class UserController {
     public ResponseEntity<String> removeUser(@PathVariable String id){
         try {
             userService.removeUser(id);
-            return ResponseEntity.ok("User removed");
-        }catch (UserDoesNotExistsException exception){
-            return ResponseEntity.status(404).body(exception.getMessage());
-        }catch (NumberFormatException exception){
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            return ResponseEntity.ok(USER_REMOVED);
+        }catch (UserDoesNotExistsException | NumberFormatException exception){
+            return handleException(exception);
         }
+    }
+
+    private ResponseEntity<String> handleException(RuntimeException exception) {
+        if (exception instanceof UserDoesNotExistsException) {
+            return ResponseEntity.status(404).body(exception.getMessage());
+        }
+        return ResponseEntity.badRequest().body(exception.getMessage());
     }
 
 }

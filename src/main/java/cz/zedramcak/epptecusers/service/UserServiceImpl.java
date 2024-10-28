@@ -33,18 +33,18 @@ public class UserServiceImpl implements UserService{
 
         setBirthNumberFormat(user);
 
-        checkIfUserWithBirtNumberExists(user.getBirthNumber());
+        ensureUserDoesNotExist(user.getBirthNumber());
 
         userRepository.addUser(user);
     }
 
     private void validateUserFields(User user) {
-        checkIfAllFieldsAreFilled(user);
+        ensureFieldsAreNotEmpty(user);
 
         validateBirthNumber(user.getBirthNumber());
     }
 
-    private static void checkIfAllFieldsAreFilled(User user) {
+    private static void ensureFieldsAreNotEmpty(User user) {
         if (user.getFirstName().isBlank() || user.getLastName().isBlank() || user.getBirthNumber().isBlank()){
             throw new MissingDataException("First name and last name are required");
         }
@@ -56,26 +56,26 @@ public class UserServiceImpl implements UserService{
         }
     }
 
-    private void checkIfUserWithBirtNumberExists(String birthNumber) {
+    private void ensureUserDoesNotExist(String birthNumber) {
         if (userRepository.existsUserByBirthNumber(birthNumber))
             throw new UserExistsException("User with this Birth Number already exists.");
     }
 
     @Override
     public void removeUser(String userId) {
-        Integer id = getParsedUserId(userId);
+        Integer id = parsedUserId(userId);
 
-        checkIfUserWithIdExistsInDatabase(id);
+        ensureUserExists(id);
 
         userRepository.removeUser(id);
     }
 
-    private void checkIfUserWithIdExistsInDatabase(Integer id) {
+    private void ensureUserExists(Integer id) {
         if (!userRepository.existsUserById(id))
             throw new UserDoesNotExistsException("User with id " + id + " does not exists");
     }
 
-    private static int getParsedUserId(String userId) {
+    private static int parsedUserId(String userId) {
         try {
             return Integer.parseInt(userId);
         } catch (NumberFormatException exception) {
@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<UserDTO> getAllUsers() {
         Map<Integer, User> users = userRepository.getAllUsers();
-        return getUserDTOS(users);
+        return convertToUserDTOs(users);
     }
 
     @Override
@@ -99,11 +99,11 @@ public class UserServiceImpl implements UserService{
                 .filter(user -> birthNumber == null || user.getValue().getBirthNumber().equals(birthNumber))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        return getUserDTOS(foundUsers);
+        return convertToUserDTOs(foundUsers);
 
     }
 
-    private List<UserDTO> getUserDTOS(Map<Integer, User> users) {
+    private List<UserDTO> convertToUserDTOs(Map<Integer, User> users) {
         List<UserDTO> filteredUsers = new ArrayList<>();
 
         users.forEach((userId, user) -> {
@@ -115,11 +115,11 @@ public class UserServiceImpl implements UserService{
     }
 
     private UserDTO createUserDTO(Integer userId, User user) {
-        int age = getAgeFromBirthNumber(user.getBirthNumber());
+        int age = calculateAgeFromBirthNumber(user.getBirthNumber());
         return new UserDTO(userId, user.getBirthNumber(), user.getFirstName(), user.getLastName(), age);
     }
 
-    private Integer getAgeFromBirthNumber(String birthNumber) {
+    private Integer calculateAgeFromBirthNumber(String birthNumber) {
         
         int year = Integer.parseInt(birthNumber.substring(0, 2));
         int month = Integer.parseInt(birthNumber.substring(2, 4));
