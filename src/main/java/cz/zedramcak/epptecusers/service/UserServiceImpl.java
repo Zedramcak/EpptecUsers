@@ -170,11 +170,15 @@ public class UserServiceImpl implements UserService{
             month = month - 50;
         }
 
+        int thisYear = LocalDate.now().getYear() % 100;
+        int century = (year > thisYear) ? 1900 : 2000;
+        int fullYear = century + year;
+
         if (month < 1 || month > 12) {
             return false;
         }
 
-        int maxDayInMonth = getMaxDayInMonth(year, month);
+        int maxDayInMonth = getMaxDayInMonth(fullYear, month);
 
         return day >= 1 && day <= maxDayInMonth;
 
