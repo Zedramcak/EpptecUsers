@@ -17,7 +17,7 @@ public class UserRepository {
 
     public void addUser(User user){
         UserDatabase.forEach((k, v) -> {
-            if (v.getBirthNumber().equals(user.getBirthNumber())){
+            if (user.getBirthNumber().equals(v.getBirthNumber())){
                 throw new UserExistsException("User with this BirthNumber is already in the UserDatabase");
             }
         });
@@ -28,6 +28,7 @@ public class UserRepository {
 
         raiseCounter();
     }
+
 
     public void removeUser(Integer userId){
         if (!UserDatabase.containsKey(userId)){
