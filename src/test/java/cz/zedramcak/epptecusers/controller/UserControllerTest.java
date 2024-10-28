@@ -31,12 +31,11 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
-    private User user;
     private UserDTO userDTO;
 
     @BeforeEach
     public void setup() {
-        user = new User();
+        User user = new User();
         user.setFirstName("Jim");
         user.setLastName("Halpert");
         user.setBirthNumber("820101/1234");
@@ -46,7 +45,7 @@ public class UserControllerTest {
 
     @Test
     public void getAllUsers_ShouldReturnListOfUsers() throws Exception {
-        List<UserDTO> users = Arrays.asList(userDTO);
+        List<UserDTO> users = Collections.singletonList(userDTO);
         when(userService.getAllUsers()).thenReturn(users);
 
         mockMvc.perform(get("/api/v1/users/list"))

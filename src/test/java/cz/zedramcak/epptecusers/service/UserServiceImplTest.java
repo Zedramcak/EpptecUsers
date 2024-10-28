@@ -117,7 +117,7 @@ public class UserServiceImplTest {
         List<UserDTO> result = userService.getAllUsers();
 
         assertEquals(1, result.size());
-        assertEquals("Dwight", result.get(0).getFirstName());
+        assertEquals("Dwight", result.getFirst().getFirstName());
     }
 
     @Test
@@ -150,7 +150,7 @@ public class UserServiceImplTest {
         List<UserDTO> result = userService.findUsers("Jim", "Halpert", null);
 
         assertEquals(1, result.size());
-        assertEquals("Jim", result.get(0).getFirstName());
+        assertEquals("Jim", result.getFirst().getFirstName());
     }
 
     @Test
