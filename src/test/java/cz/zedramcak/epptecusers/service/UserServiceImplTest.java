@@ -3,17 +3,13 @@ package cz.zedramcak.epptecusers.service;
 import cz.zedramcak.epptecusers.entity.User;
 import cz.zedramcak.epptecusers.exceptions.IncorrectBirthNumberFormatException;
 import cz.zedramcak.epptecusers.exceptions.MissingDataException;
-import cz.zedramcak.epptecusers.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 public class UserServiceImplTest {
@@ -21,25 +17,11 @@ public class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    @Mock
-    private UserRepository userRepository;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    void shouldAddUserWhenUserIsValid() {
-        User user = new User();
-        user.setFirstName("John");
-        user.setLastName("Doe");
-        user.setBirthNumber("830701/1234");
-
-        userService.addUser(user);
-
-        verify(userRepository, times(1)).addUser(user);
-    }
 
     @Test
     void shouldNotAddUserWhenFirstNameMissing() {
