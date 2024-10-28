@@ -26,9 +26,14 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/")
+    @GetMapping("/list")
     public ResponseEntity<List<UserDTO>> getAllUsers(){
         return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<UserDTO>> getFilteredUsers(@RequestBody User user){
+        return ResponseEntity.ok(userService.getUsersByParameters(user));
     }
 
     @PostMapping("/")
@@ -52,4 +57,5 @@ public class UserController {
             return ResponseEntity.badRequest().body("Id must be a number");
         }
     }
+
 }

@@ -47,21 +47,29 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<UserDTO> getAllUsers() {
         Map<Integer, User> users = userRepository.getAllUsers();
-        List<UserDTO> allUsers = new ArrayList<>();
-        users.forEach((id, user) -> {
+        return getUserDTOS(users);
+    }
+
+    @Override
+    public List<UserDTO> getUsersByParameters(User user) {
+        Map<Integer, User> users = userRepository.getUsersWithParameters(user);
+        return getUserDTOS(users);
+    }
+
+    private List<UserDTO> getUserDTOS(Map<Integer, User> users) {
+        List<UserDTO> filtredUsers = new ArrayList<>();
+        users.forEach((id, user1) -> {
             UserDTO userDTO = new UserDTO();
             userDTO.setId(id);
-            userDTO.setFirstName(user.getFirstName());
-            userDTO.setLastName(user.getLastName());
-            userDTO.setBirthNumber(user.getBirthNumber());
-            userDTO.setAge(getAgeFromBirthNumber(user.getBirthNumber()));
+            userDTO.setFirstName(user1.getFirstName());
+            userDTO.setLastName(user1.getLastName());
+            userDTO.setBirthNumber(user1.getBirthNumber());
+            userDTO.setAge(getAgeFromBirthNumber(user1.getBirthNumber()));
 
-            log.info("Created UserDTO for user {}", userDTO);
-
-            allUsers.add(userDTO);
+            filtredUsers.add(userDTO);
         });
 
-        return allUsers;
+        return filtredUsers;
     }
 
     private Integer getAgeFromBirthNumber(String birthNumber) {

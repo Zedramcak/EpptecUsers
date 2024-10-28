@@ -9,4 +9,5 @@ public interface UserService {
     void addUser(User user);
     void removeUser(Integer userId);
     List<UserDTO> getAllUsers();
+    List<UserDTO> getUsersByParameters(User user);
 }
