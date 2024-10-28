@@ -1,6 +1,5 @@
 package cz.zedramcak.epptecusers.entity.dto;
 
-import cz.zedramcak.epptecusers.entity.User;
 import lombok.Data;
 
 @Data
