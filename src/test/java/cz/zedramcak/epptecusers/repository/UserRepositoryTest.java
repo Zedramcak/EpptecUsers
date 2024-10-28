@@ -3,12 +3,10 @@ package cz.zedramcak.epptecusers.repository;
 import cz.zedramcak.epptecusers.entity.User;
 import cz.zedramcak.epptecusers.exceptions.UserExistsException;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Map;
 

@@ -3,7 +3,6 @@ package cz.zedramcak.epptecusers.service;
 import cz.zedramcak.epptecusers.entity.User;
 import cz.zedramcak.epptecusers.exceptions.IncorrectBirthNumberFormatException;
 import cz.zedramcak.epptecusers.exceptions.MissingDataException;
-import cz.zedramcak.epptecusers.exceptions.UserExistsException;
 import cz.zedramcak.epptecusers.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

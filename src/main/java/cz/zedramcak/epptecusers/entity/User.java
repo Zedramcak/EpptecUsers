@@ -1,7 +1,6 @@
 package cz.zedramcak.epptecusers.entity;
 
 import lombok.Data;
-import lombok.NonNull;
 
 @Data
 public class User {

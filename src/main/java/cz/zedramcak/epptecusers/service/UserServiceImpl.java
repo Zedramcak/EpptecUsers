@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 @Service
 @Log4j2
 public class UserServiceImpl implements UserService{
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -33,13 +33,9 @@ public class UserServiceImpl implements UserService{
 
         setBirthNumberFormat(user);
 
-        try{
-            userRepository.addUser(user);
-        } catch (UserExistsException exception){
-            throw exception;
-        }
+        userRepository.addUser(user);
 
-        log.info("User added -> " + user);
+        log.info("User added -> {}", user);
     }
 
     @Override
@@ -74,11 +70,7 @@ public class UserServiceImpl implements UserService{
 
         int maxDayInMonth = getMaxDayInMonth(year, month);
 
-        if (day < 1 || day > maxDayInMonth) {
-            return false;
-        }
-
-        return true;
+        return day >= 1 && day <= maxDayInMonth;
 
     }
 
