@@ -16,8 +16,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -74,7 +72,6 @@ public class UserControllerTest {
 
     @Test
     void addUserMissingDataException() throws Exception {
-        User testUser = new User();
         Mockito.doThrow(MissingDataException.class).when(userService).addUser(Mockito.any(User.class));
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -90,7 +87,6 @@ public class UserControllerTest {
 
     @Test
     void addUserIncorrectBirthNumberFormatException() throws Exception {
-        User testUser = new User();
         Mockito.doThrow(IncorrectBirthNumberFormatException.class).when(userService).addUser(Mockito.any(User.class));
 
         mockMvc.perform(MockMvcRequestBuilders
